@@ -1,0 +1,16 @@
+package edu.ucsb.cs156.example.repositories;
+
+import edu.ucsb.cs156.example.entities.UCSBDiningCommons;
+
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+/**
+ * The UCSBOrganizationRespository is a repository for UCSBOrganization entities
+ */
+
+@Repository
+public interface UCSBOrganizationRespository extends CrudRepository<UCSBOrganization, String> {
+ 
+}
