@@ -2,7 +2,7 @@
   "databaseChangeLog": [
     {
       "changeSet": {
-        "id": "UCSBMenuItemReviews-1",
+        "id": "UCSBMENUITEMREVIEW-6",
         "author": "JeremiahW",
         "preConditions": [
           {
@@ -12,7 +12,7 @@
             "not": [
               {
                 "tableExists": {
-                  "tableName": "UCSBMENUITEMREVIEWS"
+                  "tableName": "UCSBMENUITEMREVIEW"
                 }
               }
             ]
@@ -27,7 +27,7 @@
                     "autoIncrement": true,
                     "constraints": {
                       "primaryKey": true,
-                      "primaryKeyName": "UCSBMENUITEMREVIEWS_PK"
+                      "primaryKeyName": "UCSBMENUITEMREVIEW_PK"
                     },
                     "name": "ID",
                     "type": "BIGINT"
@@ -35,25 +35,25 @@
                 },
                 {
                   "column": {
-                    "name": "ITEMID",
+                    "name": "ITEM_ID",
                     "type": "BIGINT"
                   }
                 },
                 {
                   "column": {
-                    "name": "REVIEWEREMAIL",
+                    "name": "REVIEWER_EMAIL",
                     "type": "VARCHAR(255)"
                   }
                 },
                 {
                   "column": {
                     "name": "STARS",
-                    "type": "BIGINT"
+                    "type": "INT"
                   }
                 },
                 {
                   "column": {
-                    "name": "DATEREVIEWED",
+                    "name": "DATE_REVIEWED",
                     "type": "TIMESTAMP"
                   }
                 },
@@ -64,7 +64,7 @@
                   }
                 }
               ],
-              "tableName": "UCSBMENUITEMREVIEWS"
+              "tableName": "UCSBMENUITEMREVIEW"
             }
           }
         ]
