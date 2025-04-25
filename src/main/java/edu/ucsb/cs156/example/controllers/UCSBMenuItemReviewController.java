@@ -132,7 +132,7 @@ public class UCSBMenuItemReviewController extends ApiController {
 
         return review;
     }
-
+    
     /**
      * Delete a UCSBMenuItemReview
      * 
@@ -150,5 +150,5 @@ public class UCSBMenuItemReviewController extends ApiController {
         ucsbMenuItemReviewRepository.delete(review);
         return genericMessage("UCSBMenuItemReview with id %s deleted".formatted(id));
     }
-
+     
 }
