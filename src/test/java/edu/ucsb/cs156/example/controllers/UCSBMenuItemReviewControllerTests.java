@@ -200,46 +200,45 @@ public class UCSBMenuItemReviewControllerTests extends ControllerTestCase {
     @WithMockUser(roles = { "ADMIN", "USER" })
     @Test
     public void admin_can_edit_an_existing_ucsbmenuitemreview() throws Exception {
-            // arrange
-            LocalDateTime date1 = LocalDateTime.parse("2022-01-03T12:00:00");
-            LocalDateTime date2 = LocalDateTime.parse("2023-01-03T12:00:00");
+        // arrange
+        LocalDateTime date1 = LocalDateTime.parse("2022-01-03T12:00:00");
+        LocalDateTime date2 = LocalDateTime.parse("2023-01-03T12:00:00");
 
-            UCSBMenuItemReview reviewOrig = UCSBMenuItemReview.builder()
-                            .reviewerEmail("user@ucsb.edu")
-                            .stars(3)
-                            .dateReviewed(date1)
-                            .comments("Good food")
-                            .itemId(10L)
-                            .build();
+        UCSBMenuItemReview reviewOrig = UCSBMenuItemReview.builder()
+                        .reviewerEmail("user@ucsb.edu")
+                        .stars(3)
+                        .dateReviewed(date1)
+                        .comments("Good food")
+                        .itemId(10L)
+                        .build();
 
-            UCSBMenuItemReview reviewEdited = UCSBMenuItemReview.builder()
-                            .reviewerEmail("admin@ucsb.edu")
-                            .stars(5)
-                            .dateReviewed(date2)
-                            .comments("Amazing food!")
-                            .itemId(10L)
-                            .build();
+        UCSBMenuItemReview reviewEdited = UCSBMenuItemReview.builder()
+                        .reviewerEmail("admin@ucsb.edu")
+                        .stars(5)
+                        .dateReviewed(date2)
+                        .comments("Amazing food!")
+                        .itemId(9L)
+                        .build();
 
-            String requestBody = mapper.writeValueAsString(reviewEdited);
+        String requestBody = mapper.writeValueAsString(reviewEdited);
 
-            when(ucsbMenuItemReviewRepository.findById(eq(67L))).thenReturn(Optional.of(reviewOrig));
+        when(ucsbMenuItemReviewRepository.findById(eq(67L))).thenReturn(Optional.of(reviewOrig));
 
-            // act
-            MvcResult response = mockMvc.perform(
-                            put("/api/ucsbmenuitemreview?id=67")
-                                            .contentType(MediaType.APPLICATION_JSON)
-                                            .characterEncoding("utf-8")
-                                            .content(requestBody)
-                                            .with(csrf()))
-                            .andExpect(status().isOk()).andReturn();
+        // act
+        MvcResult response = mockMvc.perform(
+                        put("/api/ucsbmenuitemreview?id=67")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding("utf-8")
+                                .content(requestBody)
+                                .with(csrf()))
+                        .andExpect(status().isOk()).andReturn();
 
-            // assert
-            verify(ucsbMenuItemReviewRepository, times(1)).findById(67L);
-            verify(ucsbMenuItemReviewRepository, times(1)).save(reviewOrig);
-
-            String responseString = response.getResponse().getContentAsString();
-            String expectedResponse = mapper.writeValueAsString(reviewOrig);
-            assertEquals(expectedResponse, responseString);
+        // assert
+        verify(ucsbMenuItemReviewRepository, times(1)).findById(67L);
+        verify(ucsbMenuItemReviewRepository, times(1)).save(reviewEdited);
+        
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(requestBody, responseString);
     }
 
     @WithMockUser(roles = { "ADMIN", "USER" })
