@@ -2,7 +2,7 @@
   "databaseChangeLog": [
     {
       "changeSet": {
-        "id": "UCSBDiningCommonsMenuItems-1",
+        "id": "UCSBDiningCommonsMenuItem-4",
         "author": "EthanS",
         "preConditions": [
           {
@@ -12,7 +12,7 @@
             "not": [
               {
                 "tableExists": {
-                  "tableName": "UCSBDININGCOMMONSMENUITEMS"
+                  "tableName": "UCSBDININGCOMMONSMENUITEM"
                 }
               }
             ]
@@ -27,7 +27,7 @@
                     "autoIncrement": true,
                     "constraints": {
                       "primaryKey": true,
-                      "primaryKeyName": "UCSBDININGCOMMONSMENUITEMS_PK"
+                      "primaryKeyName": "UCSBDININGCOMMONSMENUITEM_PK"
                     },
                     "name": "ID",
                     "type": "BIGINT"
@@ -35,7 +35,7 @@
                 },
                 {
                   "column": {
-                    "name": "DININGCOMMONSCODE",
+                    "name": "DINING_COMMONS_CODE",
                     "type": "VARCHAR(255)"
                   }
                 },
@@ -52,7 +52,7 @@
                   }
                 }
               ],
-              "tableName": "UCSBDININGCOMMONSMENUITEMS"
+              "tableName": "UCSBDININGCOMMONSMENUITEM"
             }
           }
         ]
