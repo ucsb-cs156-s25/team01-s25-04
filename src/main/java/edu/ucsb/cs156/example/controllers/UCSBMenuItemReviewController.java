@@ -88,5 +88,21 @@ public class UCSBMenuItemReviewController extends ApiController {
         return savedUcsbMenuItemReview;
     }
 
+    /**
+     * Get a single UCSBMenuItemReview by id
+     * 
+     * @param id the id of the review
+     * @return a UCSBMenuItemReview
+     */
+    @Operation(summary = "Get a single menu item review")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public UCSBMenuItemReview getById(
+            @Parameter(name = "id") @RequestParam Long id) {
+        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UCSBMenuItemReview.class, id));
+
+        return review;
+    }
 
 }
