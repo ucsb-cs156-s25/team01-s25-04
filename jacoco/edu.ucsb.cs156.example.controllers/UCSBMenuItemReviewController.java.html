@@ -88,6 +88,22 @@ import java.time.LocalDateTime;
 <span class="fc" id="L88">        return savedUcsbMenuItemReview;</span>
     }
 
+    /**
+     * Get a single UCSBMenuItemReview by id
+     * 
+     * @param id the id of the review
+     * @return a UCSBMenuItemReview
+     */
+    @Operation(summary = &quot;Get a single menu item review&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
+    @GetMapping(&quot;&quot;)
+    public UCSBMenuItemReview getById(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
+<span class="fc" id="L102">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L103">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L105">        return review;</span>
+    }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
