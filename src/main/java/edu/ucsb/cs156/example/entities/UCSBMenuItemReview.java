@@ -20,7 +20,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "ucsbmenuitemreviews")
+@Entity(name = "ucsbmenuitemreview")
+
 public class UCSBMenuItemReview {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
