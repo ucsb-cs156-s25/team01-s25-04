@@ -105,5 +105,51 @@ import java.time.LocalDateTime;
 <span class="fc" id="L105">        return review;</span>
     }
 
+    /**
+     * Update a single UCSBMenuItemReview
+     * 
+     * @param id       id of the review to update
+     * @param incoming the new review
+     * @return the updated review object
+     */
+    @Operation(summary = &quot;Update a single UCSBMenuItemReview&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PutMapping(&quot;&quot;)
+    public UCSBMenuItemReview updateUCSBMenuItemReview(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id,
+            @RequestBody @Valid UCSBMenuItemReview incoming) {
+
+<span class="fc" id="L122">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L123">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L125">        review.setReviewerEmail(incoming.getReviewerEmail());</span>
+<span class="fc" id="L126">        review.setStars(incoming.getStars());</span>
+<span class="fc" id="L127">        review.setDateReviewed(incoming.getDateReviewed());</span>
+<span class="fc" id="L128">        review.setComments(incoming.getComments());</span>
+<span class="fc" id="L129">        review.setItemId(incoming.getItemId());</span>
+
+<span class="fc" id="L131">        ucsbMenuItemReviewRepository.save(review);</span>
+
+<span class="fc" id="L133">        return review;</span>
+    }
+
+    /**
+     * Delete a UCSBMenuItemReview
+     * 
+     * @param id the id of the review to delete
+     * @return a message indicating the review was deleted
+     */
+    @Operation(summary = &quot;Delete a UCSBMenuItemReview&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @DeleteMapping(&quot;&quot;)
+    public Object deleteUCSBMenuItemReview(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
+<span class="fc" id="L147">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L148">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L150">        ucsbMenuItemReviewRepository.delete(review);</span>
+<span class="fc" id="L151">        return genericMessage(&quot;UCSBMenuItemReview with id %s deleted&quot;.formatted(id));</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
