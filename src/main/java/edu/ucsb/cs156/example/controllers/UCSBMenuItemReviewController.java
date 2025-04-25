@@ -105,4 +105,50 @@ public class UCSBMenuItemReviewController extends ApiController {
         return review;
     }
 
+    /**
+     * Update a single UCSBMenuItemReview
+     * 
+     * @param id       id of the review to update
+     * @param incoming the new review
+     * @return the updated review object
+     */
+    @Operation(summary = "Update a single UCSBMenuItemReview")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("")
+    public UCSBMenuItemReview updateUCSBMenuItemReview(
+            @Parameter(name = "id") @RequestParam Long id,
+            @RequestBody @Valid UCSBMenuItemReview incoming) {
+
+        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UCSBMenuItemReview.class, id));
+
+        review.setReviewerEmail(incoming.getReviewerEmail());
+        review.setStars(incoming.getStars());
+        review.setDateReviewed(incoming.getDateReviewed());
+        review.setComments(incoming.getComments());
+        review.setItemId(incoming.getItemId());
+
+        ucsbMenuItemReviewRepository.save(review);
+
+        return review;
+    }
+
+    /**
+     * Delete a UCSBMenuItemReview
+     * 
+     * @param id the id of the review to delete
+     * @return a message indicating the review was deleted
+     */
+    @Operation(summary = "Delete a UCSBMenuItemReview")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("")
+    public Object deleteUCSBMenuItemReview(
+            @Parameter(name = "id") @RequestParam Long id) {
+        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UCSBMenuItemReview.class, id));
+
+        ucsbMenuItemReviewRepository.delete(review);
+        return genericMessage("UCSBMenuItemReview with id %s deleted".formatted(id));
+    }
+
 }
