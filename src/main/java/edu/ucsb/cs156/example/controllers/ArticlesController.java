@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * This is a REST controller for Articles
@@ -112,4 +121,34 @@ public class ArticlesController extends ApiController {
 
         return articles;
     }
+
+    /**
+     * Update a single articles
+     * 
+     * @param id       id of the articles to update
+     * @param incoming the new articles
+     * @return the updated articles object
+     */
+    @Operation(summary= "Update a single articles")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("")
+    public Articles updateArticles(
+            @Parameter(name="id") @RequestParam Long id,
+            @RequestBody @Valid Articles incoming) {
+
+        Articles articles = articlesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Articles.class, id));
+
+        articles.setTitle(incoming.getTitle());
+        articles.setUrl(incoming.getUrl()); 
+        articles.setExplanation(incoming.getExplanation());
+        articles.setEmail(incoming.getEmail()); 
+        articles.setDateAdded(incoming.getDateAdded());
+
+        articlesRepository.save(articles);
+
+        return articles;
+    }
+
+    
 }
