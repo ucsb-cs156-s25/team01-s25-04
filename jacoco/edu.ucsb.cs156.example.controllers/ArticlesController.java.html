@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+
+
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * This is a REST controller for Articles
@@ -38,8 +43,8 @@ import java.time.ZonedDateTime;
 @Tag(name = &quot;articles&quot;)
 @RequestMapping(&quot;/api/articles&quot;)
 @RestController
-<span class="fc" id="L41">@Slf4j</span>
-<span class="fc" id="L42">public class ArticlesController extends ApiController {</span>
+<span class="fc" id="L46">@Slf4j</span>
+<span class="fc" id="L47">public class ArticlesController extends ApiController {</span>
 
     @Autowired
     ArticlesRepository articlesRepository;
@@ -53,8 +58,8 @@ import java.time.ZonedDateTime;
     @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
     @GetMapping(&quot;/all&quot;)
     public Iterable&lt;Articles&gt; allArticles() {
-<span class="fc" id="L56">        Iterable&lt;Articles&gt; Articles = articlesRepository.findAll();</span>
-<span class="fc" id="L57">        return Articles;</span>
+<span class="fc" id="L61">        Iterable&lt;Articles&gt; Articles = articlesRepository.findAll();</span>
+<span class="fc" id="L62">        return Articles;</span>
     }
 
     /**
@@ -81,18 +86,18 @@ import java.time.ZonedDateTime;
         // For an explanation of @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         // See: https://www.baeldung.com/spring-date-parameters
 
-<span class="fc" id="L84">        log.info(&quot;dateAdded={}&quot;, dateAdded);</span>
+<span class="fc" id="L89">        log.info(&quot;dateAdded={}&quot;, dateAdded);</span>
 
-<span class="fc" id="L86">        Articles Article = new Articles();</span>
-<span class="fc" id="L87">        Article.setTitle(title);</span>
-<span class="fc" id="L88">        Article.setUrl(url);</span>
-<span class="fc" id="L89">        Article.setExplanation(explanation);</span>
-<span class="fc" id="L90">        Article.setEmail(email);</span>
-<span class="fc" id="L91">        Article.setDateAdded(dateAdded);</span>
+<span class="fc" id="L91">        Articles Article = new Articles();</span>
+<span class="fc" id="L92">        Article.setTitle(title);</span>
+<span class="fc" id="L93">        Article.setUrl(url);</span>
+<span class="fc" id="L94">        Article.setExplanation(explanation);</span>
+<span class="fc" id="L95">        Article.setEmail(email);</span>
+<span class="fc" id="L96">        Article.setDateAdded(dateAdded);</span>
 
-<span class="fc" id="L93">        Articles savedArticles = articlesRepository.save(Article);</span>
+<span class="fc" id="L98">        Articles savedArticles = articlesRepository.save(Article);</span>
 
-<span class="fc" id="L95">        return savedArticles;</span>
+<span class="fc" id="L100">        return savedArticles;</span>
     }
 
 
@@ -107,10 +112,40 @@ import java.time.ZonedDateTime;
     @GetMapping(&quot;&quot;)
     public Articles getById(
             @Parameter(name=&quot;id&quot;) @RequestParam Long id) {
-<span class="fc" id="L110">        Articles articles = articlesRepository.findById(id)</span>
-<span class="fc" id="L111">                .orElseThrow(() -&gt; new EntityNotFoundException(Articles.class, id));</span>
+<span class="fc" id="L115">        Articles articles = articlesRepository.findById(id)</span>
+<span class="fc" id="L116">                .orElseThrow(() -&gt; new EntityNotFoundException(Articles.class, id));</span>
 
-<span class="fc" id="L113">        return articles;</span>
+<span class="fc" id="L118">        return articles;</span>
     }
+
+    /**
+     * Update a single articles
+     * 
+     * @param id       id of the articles to update
+     * @param incoming the new articles
+     * @return the updated articles object
+     */
+    @Operation(summary= &quot;Update a single articles&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PutMapping(&quot;&quot;)
+    public Articles updateArticles(
+            @Parameter(name=&quot;id&quot;) @RequestParam Long id,
+            @RequestBody @Valid Articles incoming) {
+
+<span class="fc" id="L135">        Articles articles = articlesRepository.findById(id)</span>
+<span class="fc" id="L136">                .orElseThrow(() -&gt; new EntityNotFoundException(Articles.class, id));</span>
+
+<span class="fc" id="L138">        articles.setTitle(incoming.getTitle());</span>
+<span class="fc" id="L139">        articles.setUrl(incoming.getUrl()); </span>
+<span class="fc" id="L140">        articles.setExplanation(incoming.getExplanation());</span>
+<span class="fc" id="L141">        articles.setEmail(incoming.getEmail()); </span>
+<span class="fc" id="L142">        articles.setDateAdded(incoming.getDateAdded());</span>
+
+<span class="fc" id="L144">        articlesRepository.save(articles);</span>
+
+<span class="fc" id="L146">        return articles;</span>
+    }
+
+    
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
