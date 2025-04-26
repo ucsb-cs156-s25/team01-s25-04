@@ -78,7 +78,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
         public void logged_in_user_can_get_all_ucsbdates() throws Exception {
 
                 // arrange
-                LocalDateTime ldt1 = LocalDateTime.parse("2022-04-20");
+                LocalDateTime ldt1 = LocalDateTime.parse("2022-04-20T00:00:00");
 
                 Articles article1 = Articles.builder()
                         .title("Using testing-playground with React Testing Library")
@@ -110,7 +110,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
         public void an_admin_user_can_post_a_new_articles() throws Exception {
                 // arrange
 
-                LocalDateTime ldt1 = LocalDateTime.parse("2022-04-20");
+                LocalDateTime ldt1 = LocalDateTime.parse("2022-04-20T00:00:00");
 
                 Articles article1 = Articles.builder()
                         .title("Using testing-playground with React Testing Library")
@@ -124,7 +124,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                post("/api/articles/post?title=Using testing-playground with React Testing Library&url=https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7&explanation=Helpful when we get to front end development&dateAdded=2022-04-20")
+                                post("/api/articles/post?title=Using testing-playground with React Testing Library&url=https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7&explanation=Helpful when we get to front end development&dateAdded=2022-04-20T00:00")
                                                 .with(csrf()))
                                 .andExpect(status().isOk()).andReturn();
 
