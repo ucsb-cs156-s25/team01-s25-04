@@ -161,7 +161,7 @@ public class ArticlesController extends ApiController {
                 .orElseThrow(() -> new EntityNotFoundException(Articles.class, id));
 
         articlesRepository.delete(articles);
-        return genericMessage("articles with id %s deleted".formatted(id));
+        return genericMessage("Articles with id %s deleted".formatted(id));
     }
 
     

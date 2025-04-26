@@ -304,8 +304,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
         @WithMockUser(roles = { "ADMIN", "USER" })
         @Test
-        public void admin_tries_to_delete_non_existant_articles_and_gets_right_error_message()
-                        throws Exception {
+        public void admin_tries_to_delete_non_existant_articles_and_gets_right_error_message() throws Exception {
                 // arrange
 
                 when(articlesRepository.findById(eq(15L))).thenReturn(Optional.empty());
@@ -319,6 +318,6 @@ public class ArticlesControllerTests extends ControllerTestCase {
                 // assert
                 verify(articlesRepository, times(1)).findById(15L);
                 Map<String, Object> json = responseToJson(response);
-                assertEquals("UCSBDate with id 15 not found", json.get("message"));
+                assertEquals("Articles with id 15 not found", json.get("message"));
         }
 }
