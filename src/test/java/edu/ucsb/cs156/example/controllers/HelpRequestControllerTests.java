@@ -205,7 +205,7 @@ public class HelpRequestControllerTests extends ControllerTestCase {
                 ZonedDateTime zdt2 = ZonedDateTime.parse("2022-01-03T00:00:00Z");
 
                 HelpRequest helpRequestOrig = HelpRequest.builder()
-                                .requesterEmail( "test3@ucsb.edu")
+                                .requesterEmail("test3@ucsb.edu")
                                 .teamId("s22-5pm-3")
                                 .tableOrBreakoutRoom("3")
                                 .requestTime(zdt1)
@@ -221,8 +221,6 @@ public class HelpRequestControllerTests extends ControllerTestCase {
                                 .explanation("Test4")
                                 .solved(true)
                                 .build();
-
-
 
                 String requestBody = mapper.writeValueAsString(helpRequestEdited);
 
@@ -278,6 +276,58 @@ public class HelpRequestControllerTests extends ControllerTestCase {
                 Map<String, Object> json = responseToJson(response);
                 assertEquals("HelpRequest with id 67 not found", json.get("message"));
 
+        }
+
+        @WithMockUser(roles = { "ADMIN", "USER" })
+        @Test
+        public void admin_can_delete_a_helprequest() throws Exception {
+                // arrange
+                ZonedDateTime zdt1 = ZonedDateTime.parse("2025-05-05T00:00:00Z");
+
+                HelpRequest helpRequest4 = HelpRequest.builder()
+                                .requesterEmail("test4")
+                                .teamId("s22-5pm-3")
+                                .tableOrBreakoutRoom("3")
+                                .requestTime(zdt1)
+                                .explanation("Test4")
+                                .solved(true)
+                                .build();
+                
+
+                when(helpRequestRepository.findById(eq(15L))).thenReturn(Optional.of(helpRequest4));
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                delete("/api/HelpRequest?id=15")
+                                                .with(csrf()))
+                                .andExpect(status().isOk()).andReturn();
+
+                // assert
+                verify(helpRequestRepository, times(1)).findById(15L);
+                verify(helpRequestRepository, times(1)).delete(any());
+
+                Map<String, Object> json = responseToJson(response);
+                assertEquals("HelpRequest with id 15 deleted", json.get("message"));
+        }
+
+        @WithMockUser(roles = { "ADMIN", "USER" })
+        @Test
+        public void admin_tries_to_delete_non_existant_helprequest_and_gets_right_error_message()
+                        throws Exception {
+                // arrange
+
+                when(helpRequestRepository.findById(eq(15L))).thenReturn(Optional.empty());
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                delete("/api/HelpRequest?id=15")
+                                                .with(csrf()))
+                                .andExpect(status().isNotFound()).andReturn();
+
+                // assert
+                verify(helpRequestRepository, times(1)).findById(15L);
+                Map<String, Object> json = responseToJson(response);
+                assertEquals("HelpRequest with id 15 not found", json.get("message"));
         }
 
 }

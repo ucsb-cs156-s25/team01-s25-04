@@ -111,7 +111,6 @@ public class HelpRequestController extends ApiController {
         return helpRequest;
     }
 
-
     /**
      * Update a single Help Request
      * 
@@ -119,11 +118,11 @@ public class HelpRequestController extends ApiController {
      * @param incoming the new Help Request
      * @return the updated HelpRequest object
      */
-    @Operation(summary= "Update a single Help Request")
+    @Operation(summary = "Update a single Help Request")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("")
     public HelpRequest updateHelpRequest(
-            @Parameter(name="id") @RequestParam Long id,
+            @Parameter(name = "id") @RequestParam Long id,
             @RequestBody @Valid HelpRequest incoming) {
 
         HelpRequest helpRequest = helpRequestRepository.findById(id)
@@ -138,6 +137,24 @@ public class HelpRequestController extends ApiController {
         helpRequestRepository.save(helpRequest);
 
         return helpRequest;
+    }
+
+    /**
+     * Delete a HelpRequest
+     * 
+     * @param id the id of the date to delete
+     * @return a message indicating the date was deleted
+     */
+    @Operation(summary = "Delete a help request")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("")
+    public Object deleteHelpRequest(
+            @Parameter(name = "id") @RequestParam Long id) {
+        HelpRequest helpRequest = helpRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(HelpRequest.class, id));
+
+        helpRequestRepository.delete(helpRequest);
+        return genericMessage("HelpRequest with id %s deleted".formatted(id));
     }
 
 }
