@@ -41,7 +41,7 @@
                   },
                   {
                     "column": {
-                      "name": "TEAM_ID",
+                      "name": "TEAMID",
                       "type": "VARCHAR(255)"
                     }
                   },
