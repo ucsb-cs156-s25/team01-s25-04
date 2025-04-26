@@ -146,6 +146,24 @@ import java.util.Optional;
 <span class="fc" id="L146">        return articles;</span>
     }
 
+    /**
+     * Delete a Articles
+     * 
+     * @param id the id of the articles to delete
+     * @return a message indicating the articles was deleted
+     */
+    @Operation(summary= &quot;Delete a Articles&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @DeleteMapping(&quot;&quot;)
+    public Object deleteArticles(
+            @Parameter(name=&quot;id&quot;) @RequestParam Long id) {
+<span class="fc" id="L160">        Articles articles = articlesRepository.findById(id)</span>
+<span class="fc" id="L161">                .orElseThrow(() -&gt; new EntityNotFoundException(Articles.class, id));</span>
+
+<span class="fc" id="L163">        articlesRepository.delete(articles);</span>
+<span class="fc" id="L164">        return genericMessage(&quot;Articles with id %s deleted&quot;.formatted(id));</span>
+    }
+
     
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
