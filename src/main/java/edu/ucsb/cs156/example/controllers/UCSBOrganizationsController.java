@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+/**
+ * This is a REST controller for UCSBOrganizations
+ */
+
 @Tag(name = "UCSBOrganizations")
 @RequestMapping("/api/ucsborganizations")
 @RestController
@@ -42,6 +46,14 @@ public class UCSBOrganizationsController extends ApiController {
         Iterable<UCSBOrganization> org = ucsbOrganizationRepository.findAll();
         return org;
     }
+
+    /**
+     * This method creates a new organization. Accessible only to users with the role "ROLE_ADMIN".
+     * @param orgCode code of the organization
+     * @param orgTranslationShort acronym/short name of organization
+     * @param orgTranslation full name of organization
+     * @param inactive whether or not the org is inactive
+     */
 
     @Operation(summary= "Create a new organization")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -67,7 +79,7 @@ public class UCSBOrganizationsController extends ApiController {
 
     /**
      * This method returns a single organization.
-     * @param code code of the organization
+     * @param orgCode code of the organization
      * @return a single organization
      */
     @Operation(summary= "Get a single organization")
