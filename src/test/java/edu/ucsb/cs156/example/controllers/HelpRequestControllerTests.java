@@ -140,10 +140,6 @@ public class HelpRequestControllerTests extends ControllerTestCase {
                 assertEquals(expectedJson, responseString);
         }
 
-
-
-
-
         @Test
         public void logged_out_users_cannot_get_by_id() throws Exception {
                 mockMvc.perform(get("/api/HelpRequest?id=7"))
@@ -198,6 +194,90 @@ public class HelpRequestControllerTests extends ControllerTestCase {
                 Map<String, Object> json = responseToJson(response);
                 assertEquals("EntityNotFoundException", json.get("type"));
                 assertEquals("HelpRequest with id 7 not found", json.get("message"));
+        }
+
+        @WithMockUser(roles = { "ADMIN", "USER" })
+        @Test
+        public void admin_can_edit_an_existing_helprequest() throws Exception {
+                // arrange
+
+                ZonedDateTime zdt1 = ZonedDateTime.parse("2025-05-05T00:00:00Z");
+                ZonedDateTime zdt2 = ZonedDateTime.parse("2022-01-03T00:00:00Z");
+
+                HelpRequest helpRequestOrig = HelpRequest.builder()
+                                .requesterEmail( "test3@ucsb.edu")
+                                .teamId("s22-5pm-3")
+                                .tableOrBreakoutRoom("3")
+                                .requestTime(zdt1)
+                                .explanation("Test3")
+                                .solved(false)
+                                .build();
+
+                HelpRequest helpRequestEdited = HelpRequest.builder()
+                                .requesterEmail("test4@ucsb.edu")
+                                .teamId("s22-5pm-4")
+                                .tableOrBreakoutRoom("4")
+                                .requestTime(zdt2)
+                                .explanation("Test4")
+                                .solved(true)
+                                .build();
+
+
+
+                String requestBody = mapper.writeValueAsString(helpRequestEdited);
+
+                when(helpRequestRepository.findById(eq(67L))).thenReturn(Optional.of(helpRequestOrig));
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                put("/api/HelpRequest?id=67")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .characterEncoding("utf-8")
+                                                .content(requestBody)
+                                                .with(csrf()))
+                                .andExpect(status().isOk()).andReturn();
+
+                // assert
+                verify(helpRequestRepository, times(1)).findById(67L);
+                verify(helpRequestRepository, times(1)).save(helpRequestEdited);
+                String responseString = response.getResponse().getContentAsString();
+                assertEquals(requestBody, responseString);
+        }
+
+        @WithMockUser(roles = { "ADMIN", "USER" })
+        @Test
+        public void admin_cannot_edit_helprequest_that_does_not_exist() throws Exception {
+                // arrange
+
+                ZonedDateTime zdt1 = ZonedDateTime.parse("2025-05-05T00:00:00Z");
+
+                HelpRequest helpRequestEdited = HelpRequest.builder()
+                                .requesterEmail("testEdit")
+                                .teamId("s22-5pm-3")
+                                .tableOrBreakoutRoom("3")
+                                .requestTime(zdt1)
+                                .explanation("TestEdit")
+                                .solved(true)
+                                .build();
+
+                String requestBody = mapper.writeValueAsString(helpRequestEdited);
+
+                when(helpRequestRepository.findById(eq(67L))).thenReturn(Optional.empty());
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                put("/api/HelpRequest?id=67")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .characterEncoding("utf-8")
+                                                .content(requestBody)
+                                                .with(csrf()))
+                                .andExpect(status().isNotFound()).andReturn();
+
+                // assert
+                verify(helpRequestRepository, times(1)).findById(67L);
+                Map<String, Object> json = responseToJson(response);
+                assertEquals("HelpRequest with id 67 not found", json.get("message"));
+
         }
 
 }
