@@ -75,7 +75,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
         @WithMockUser(roles = { "USER" })
         @Test
-        public void logged_in_user_can_get_all_ucsbdates() throws Exception {
+        public void logged_in_user_can_get_all_articles() throws Exception {
 
                 // arrange
                 LocalDateTime ldt1 = LocalDateTime.parse("2022-04-20T00:00:00");
@@ -84,7 +84,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
                         .title("Using testing-playground with React Testing Library")
                         .url("https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7")
                         .explanation("Helpful when we get to front end development")
-                        .email("phtcon@ucsb.edu\t")
+                        .email("phtcon@ucsb.edu")
                         .dateAdded(ldt1)
                         .build();
 
@@ -116,7 +116,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
                         .title("Using testing-playground with React Testing Library")
                         .url("https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7")
                         .explanation("Helpful when we get to front end development")
-                        .email("phtcon@ucsb.edu\t")
+                        .email("phtcon@ucsb.edu")
                         .dateAdded(ldt1)
                         .build();
 
@@ -124,7 +124,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                post("/api/articles/post?title=Using testing-playground with React Testing Library&url=https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7&explanation=Helpful when we get to front end development&dateAdded=2022-04-20T00:00")
+                                post("/api/articles/post?title=Using testing-playground with React Testing Library" + "&url=https://dev.to/katieraby/using-testing-playground-with-react-testing-library-26j7" + "&explanation=Helpful when we get to front end development" + "&email=phtcon@ucsb.edu" + "&dateAdded=2022-04-20T00:00:00")
                                                 .with(csrf()))
                                 .andExpect(status().isOk()).andReturn();
 

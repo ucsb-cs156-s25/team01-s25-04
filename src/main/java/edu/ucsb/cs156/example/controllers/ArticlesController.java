@@ -35,8 +35,8 @@ import java.time.ZonedDateTime;
  * This is a REST controller for Articles
  */
 
-@Tag(name = "Articles")
-@RequestMapping("/api/Articles")
+@Tag(name = "articles")
+@RequestMapping("/api/articles")
 @RestController
 @Slf4j
 public class ArticlesController extends ApiController {
@@ -60,11 +60,11 @@ public class ArticlesController extends ApiController {
     /**
      * Get a new Articles 
      * 
-     * @param title
-     * @param url
-     * @param explanation
-     * @param email
-     * @param dateAdded
+     * @param title the title of the Articles
+     * @param url the url of the Articles
+     * @param explanation the explanation of the Articles
+     * @param email the email of the Articles
+     * @param dateAdded the dateAdded of the Articles
      * @return the saved Articles
      */
     @Operation(summary= "Create a new Articles")
