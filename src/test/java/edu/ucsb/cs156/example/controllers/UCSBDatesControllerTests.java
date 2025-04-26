@@ -278,7 +278,7 @@ public class UCSBDatesControllerTests extends ControllerTestCase {
 
                 // assert
                 verify(ucsbDateRepository, times(1)).findById(67L);
-                verify(ucsbDateRepository, times(1)).save(ucsbDateEdited); // should be saved with correct user
+                verify(ucsbDateRepository, times(1)).save(ucsbDateEdited); 
                 String responseString = response.getResponse().getContentAsString();
                 assertEquals(requestBody, responseString);
         }
