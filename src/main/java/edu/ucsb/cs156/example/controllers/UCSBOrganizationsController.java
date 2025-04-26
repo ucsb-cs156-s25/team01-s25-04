@@ -39,8 +39,8 @@ public class UCSBOrganizationsController extends ApiController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<UCSBOrganization> allOrganizations() {
-        Iterable<UCSBOrganization> commons = ucsbOrganizationRepository.findAll();
-        return commons;
+        Iterable<UCSBOrganization> org = ucsbOrganizationRepository.findAll();
+        return org;
     }
 
     @Operation(summary= "Create a new organization")
@@ -66,9 +66,9 @@ public class UCSBOrganizationsController extends ApiController {
     }
 
     /**
-     * This method returns a single diningcommons.
-     * @param code code of the diningcommons
-     * @return a single diningcommons
+     * This method returns a single organization.
+     * @param code code of the organization
+     * @return a single organization
      */
     @Operation(summary= "Get a single organization")
     @PreAuthorize("hasRole('ROLE_USER')")

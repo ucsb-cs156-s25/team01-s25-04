@@ -56,6 +56,12 @@ public class UCSBOrganizationsControllerTests extends ControllerTestCase {
     }
 
     @Test
+        public void logged_out_users_cannot_get_by_id() throws Exception {
+                mockMvc.perform(get("/api/ucsborganizations?orgCode=test"))
+                                .andExpect(status().is(403)); // logged out users can't get by id
+        }
+
+    @Test
         public void logged_out_users_cannot_post() throws Exception {
                 mockMvc.perform(post("/api/ucsborganizations/post"))
                                 .andExpect(status().is(403));
@@ -82,8 +88,15 @@ public class UCSBOrganizationsControllerTests extends ControllerTestCase {
                             .inactive(false)
                             .build();
 
+                UCSBOrganization org2 = UCSBOrganization.builder()
+                .orgCode("omega")
+                .orgTranslationShort("o")
+                .orgTranslation("omegas")
+                .inactive(true)
+                .build();
+
             ArrayList<UCSBOrganization> expectedOrganizations = new ArrayList<>();
-            expectedOrganizations.addAll(Arrays.asList(org));
+            expectedOrganizations.addAll(Arrays.asList(org, org2));
 
             when(ucsbOrganizationRepository.findAll()).thenReturn(expectedOrganizations);
 
@@ -125,12 +138,6 @@ public class UCSBOrganizationsControllerTests extends ControllerTestCase {
             String responseString = response.getResponse().getContentAsString();
             assertEquals(expectedJson, responseString);
     }
-
-    @Test
-        public void logged_out_users_cannot_get_by_id() throws Exception {
-                mockMvc.perform(get("/api/ucsborganizations?orgCode=test"))
-                                .andExpect(status().is(403)); // logged out users can't get by id
-        }
 
     @WithMockUser(roles = { "USER" })
         @Test
