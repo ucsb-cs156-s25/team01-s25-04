@@ -22,12 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+/**
+ * This is a REST controller for UCSBOrganizations
+ */
+
 @Tag(name = &quot;UCSBOrganizations&quot;)
 @RequestMapping(&quot;/api/ucsborganizations&quot;)
 @RestController
-<span class="fc" id="L28">@Slf4j</span>
+<span class="fc" id="L32">@Slf4j</span>
 
-<span class="fc" id="L30">public class UCSBOrganizationsController extends ApiController {</span>
+<span class="fc" id="L34">public class UCSBOrganizationsController extends ApiController {</span>
     @Autowired 
     UCSBOrganizationRepository ucsbOrganizationRepository;
 
@@ -39,9 +43,17 @@ import jakarta.validation.Valid;
     @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
     @GetMapping(&quot;/all&quot;)
     public Iterable&lt;UCSBOrganization&gt; allOrganizations() {
-<span class="fc" id="L42">        Iterable&lt;UCSBOrganization&gt; org = ucsbOrganizationRepository.findAll();</span>
-<span class="fc" id="L43">        return org;</span>
+<span class="fc" id="L46">        Iterable&lt;UCSBOrganization&gt; org = ucsbOrganizationRepository.findAll();</span>
+<span class="fc" id="L47">        return org;</span>
     }
+
+    /**
+     * This method creates a new organization. Accessible only to users with the role &quot;ROLE_ADMIN&quot;.
+     * @param orgCode code of the organization
+     * @param orgTranslationShort acronym/short name of organization
+     * @param orgTranslation full name of organization
+     * @param inactive whether or not the org is inactive
+     */
 
     @Operation(summary= &quot;Create a new organization&quot;)
     @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
@@ -54,20 +66,20 @@ import jakarta.validation.Valid;
         )
         {
 
-<span class="fc" id="L57">        UCSBOrganization organization = new UCSBOrganization();</span>
-<span class="fc" id="L58">        organization.setOrgCode(orgCode);</span>
-<span class="fc" id="L59">        organization.setOrgTranslationShort(orgTranslationShort);</span>
-<span class="fc" id="L60">        organization.setOrgTranslation(orgTranslation);</span>
-<span class="fc" id="L61">        organization.setInactive(inactive);</span>
+<span class="fc" id="L69">        UCSBOrganization organization = new UCSBOrganization();</span>
+<span class="fc" id="L70">        organization.setOrgCode(orgCode);</span>
+<span class="fc" id="L71">        organization.setOrgTranslationShort(orgTranslationShort);</span>
+<span class="fc" id="L72">        organization.setOrgTranslation(orgTranslation);</span>
+<span class="fc" id="L73">        organization.setInactive(inactive);</span>
 
-<span class="fc" id="L63">        UCSBOrganization savedOrganization = ucsbOrganizationRepository.save(organization);</span>
+<span class="fc" id="L75">        UCSBOrganization savedOrganization = ucsbOrganizationRepository.save(organization);</span>
 
-<span class="fc" id="L65">        return savedOrganization;</span>
+<span class="fc" id="L77">        return savedOrganization;</span>
     }
 
     /**
      * This method returns a single organization.
-     * @param code code of the organization
+     * @param orgCode code of the organization
      * @return a single organization
      */
     @Operation(summary= &quot;Get a single organization&quot;)
@@ -75,10 +87,10 @@ import jakarta.validation.Valid;
     @GetMapping(&quot;&quot;)
     public UCSBOrganization getById(
             @Parameter(name=&quot;orgCode&quot;) @RequestParam String orgCode) {
-<span class="fc" id="L78">        UCSBOrganization organization = ucsbOrganizationRepository.findById(orgCode)</span>
-<span class="fc" id="L79">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBOrganization.class, orgCode));</span>
+<span class="fc" id="L90">        UCSBOrganization organization = ucsbOrganizationRepository.findById(orgCode)</span>
+<span class="fc" id="L91">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBOrganization.class, orgCode));</span>
 
-<span class="fc" id="L81">        return organization;</span>
+<span class="fc" id="L93">        return organization;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
