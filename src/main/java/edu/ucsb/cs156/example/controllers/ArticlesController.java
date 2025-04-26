@@ -49,7 +49,7 @@ public class ArticlesController extends ApiController {
      * 
      * @return an iterable of Articles
      */
-    @Operation(summary= "List all Articles")
+    @Operation(summary = "List all Articles")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<Articles> allArticles() {
@@ -58,24 +58,24 @@ public class ArticlesController extends ApiController {
     }
 
     /**
-     * Get a new Articles 
+     * Get a new Articles
      * 
-     * @param title the title of the Articles
-     * @param url the url of the Articles
+     * @param title       the title of the Articles
+     * @param url         the url of the Articles
      * @param explanation the explanation of the Articles
-     * @param email the email of the Articles
-     * @param dateAdded the dateAdded of the Articles
+     * @param email       the email of the Articles
+     * @param dateAdded   the dateAdded of the Articles
      * @return the saved Articles
      */
-    @Operation(summary= "Create a new Articles")
+    @Operation(summary = "Create a new Articles")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/post")
     public Articles postArticles(
-            @Parameter(name="title") @RequestParam String title,
-            @Parameter(name="url") @RequestParam String url,
-            @Parameter(name="explanation") @RequestParam String explanation,
-            @Parameter(name="email") @RequestParam String email,
-            @Parameter(name="dateAdded") @RequestParam("dateAdded") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAdded)
+            @Parameter(name = "title") @RequestParam String title,
+            @Parameter(name = "url") @RequestParam String url,
+            @Parameter(name = "explanation") @RequestParam String explanation,
+            @Parameter(name = "email") @RequestParam String email,
+            @Parameter(name = "dateAdded") @RequestParam("dateAdded") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateAdded)
             throws JsonProcessingException {
 
         // For an explanation of @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -93,5 +93,23 @@ public class ArticlesController extends ApiController {
         Articles savedArticles = articlesRepository.save(Article);
 
         return savedArticles;
+    }
+
+
+    /**
+     * Get a single articles by id
+     * 
+     * @param id the id of the articles
+     * @return a articles
+     */
+    @Operation(summary= "Get a single articles")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public Articles getById(
+            @Parameter(name="id") @RequestParam Long id) {
+        Articles articles = articlesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Articles.class, id));
+
+        return articles;
     }
 }
