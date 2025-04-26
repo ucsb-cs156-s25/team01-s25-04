@@ -37,15 +37,16 @@ import java.time.ZonedDateTime;
 @RestController
 @Slf4j
 public class HelpRequestController extends ApiController {
-    
+
     @Autowired
     HelpRequestRepository helpRequestRepository;
+
     /**
      * List all HelpRequests
      * 
      * @return an iterable of HelpRequests
      */
-    @Operation(summary= "List all Help Requests")
+    @Operation(summary = "List all Help Requests")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<HelpRequest> allHelpRequests() {
@@ -56,24 +57,24 @@ public class HelpRequestController extends ApiController {
     /**
      * Create a new HelpRequest
      * 
-     * @param requesterEmail  Email of the requester
-     * @param teamId         Team ID
-     * @param tableOrBreakoutRoom  Table or breakout room
-     * @param requestTime    Time of the request
-     * @param explanation    Explanation of the request
-     * @param solved         Whether the request is solved
+     * @param requesterEmail      Email of the requester
+     * @param teamId              Team ID
+     * @param tableOrBreakoutRoom Table or breakout room
+     * @param requestTime         Time of the request
+     * @param explanation         Explanation of the request
+     * @param solved              Whether the request is solved
      * @return the saved HelpRequest
      */
-    @Operation(summary= "Create a new help request")
+    @Operation(summary = "Create a new help request")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/post")
     public HelpRequest postHelpRequest(
-            @Parameter(name="requesterEmail") @RequestParam String requesterEmail,
-            @Parameter(name="teamId") @RequestParam String teamId,
-            @Parameter(name="tableOrBreakoutRoom") @RequestParam String tableOrBreakoutRoom,
-            @Parameter(name="requestTime") @RequestParam("requestTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime requestTime,
-            @Parameter(name="explanation") @RequestParam String explanation,
-            @Parameter(name="solved") @RequestParam boolean solved)
+            @Parameter(name = "requesterEmail") @RequestParam String requesterEmail,
+            @Parameter(name = "teamId") @RequestParam String teamId,
+            @Parameter(name = "tableOrBreakoutRoom") @RequestParam String tableOrBreakoutRoom,
+            @Parameter(name = "requestTime") @RequestParam("requestTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime requestTime,
+            @Parameter(name = "explanation") @RequestParam String explanation,
+            @Parameter(name = "solved") @RequestParam boolean solved)
             throws JsonProcessingException {
 
         // For an explanation of @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -91,6 +92,23 @@ public class HelpRequestController extends ApiController {
 
         HelpRequest savedHelpRequest = helpRequestRepository.save(helpRequest);
         return savedHelpRequest;
+    }
+
+    /**
+     * Get a single help request by id
+     * 
+     * @param id the id of the help request
+     * @return a help request
+     */
+    @Operation(summary = "Get a single help request")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public HelpRequest getById(
+            @Parameter(name = "id") @RequestParam Long id) {
+        HelpRequest helpRequest = helpRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(HelpRequest.class, id));
+
+        return helpRequest;
     }
 
 }
