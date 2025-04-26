@@ -31,6 +31,10 @@ public class UCSBOrganizationsController extends ApiController {
     @Autowired 
     UCSBOrganizationRepository ucsbOrganizationRepository;
 
+    /**
+     * THis method returns a list of all ucsborganizations.
+     * @return a list of all ucsborganizations
+     */
     @Operation(summary= "List all ucsb organizations")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
@@ -59,5 +63,21 @@ public class UCSBOrganizationsController extends ApiController {
         UCSBOrganization savedOrganization = ucsbOrganizationRepository.save(organization);
 
         return savedOrganization;
+    }
+
+    /**
+     * This method returns a single diningcommons.
+     * @param code code of the diningcommons
+     * @return a single diningcommons
+     */
+    @Operation(summary= "Get a single organization")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public UCSBOrganization getById(
+            @Parameter(name="orgCode") @RequestParam String orgCode) {
+        UCSBOrganization organization = ucsbOrganizationRepository.findById(orgCode)
+                .orElseThrow(() -> new EntityNotFoundException(UCSBOrganization.class, orgCode));
+
+        return organization;
     }
 }
