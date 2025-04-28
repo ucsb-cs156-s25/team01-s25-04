@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UCSBMenuItemReviewController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">team01</a> &gt; <a href="index.source.html" class="el_package">edu.ucsb.cs156.example.controllers</a> &gt; <span class="el_source">UCSBMenuItemReviewController.java</span></div><h1>UCSBMenuItemReviewController.java</h1><pre class="source lang-java linenums">package edu.ucsb.cs156.example.controllers;
+
+import edu.ucsb.cs156.example.entities.UCSBMenuItemReview;
+import edu.ucsb.cs156.example.errors.EntityNotFoundException;
+import edu.ucsb.cs156.example.repositories.UCSBMenuItemReviewRepository;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+
+import java.time.LocalDateTime;
+
+
+@Tag(name = &quot;UCSBMenuItemReview&quot;)
+@RequestMapping(&quot;/api/ucsbmenuitemreview&quot;)
+@RestController
+<span class="fc" id="L34">@Slf4j</span>
+
+<span class="fc" id="L36">public class UCSBMenuItemReviewController extends ApiController {</span>
+    @Autowired
+    UCSBMenuItemReviewRepository ucsbMenuItemReviewRepository;
+
+    /**
+     * List all UCSB menu item reviews
+     *
+     * @return an iterable of UCSBMenuItemReview
+     */
+    @Operation(summary= &quot;List all ucsb menu item reviews&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
+    @GetMapping(&quot;/all&quot;)
+    public Iterable&lt;UCSBMenuItemReview&gt; allUCSBMenuItemRevies() {
+<span class="fc" id="L49">        Iterable&lt;UCSBMenuItemReview&gt; reviews = ucsbMenuItemReviewRepository.findAll();</span>
+<span class="fc" id="L50">        return reviews;</span>
+    }
+
+    /** 
+     * Create a new UCSB menu item review
+     * 
+     * @param itemId the id of the menu item
+     * @param reviewerEmail the email of the reviewer
+     * @param stars the number of stars (0 to 5)
+    //  * @param dateReviewed the date the review was made
+     * @param comments the comments of the review
+     * @return the created UCSBMenuItemReview
+     */
+    @Operation(summary= &quot;Create a new ucsb menu item review&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
+    @PostMapping(&quot;/post&quot;)
+
+    public UCSBMenuItemReview postUCSBMenuItemReview(
+            @Parameter(name = &quot;itemId&quot;) @RequestParam long itemId,
+            @Parameter(name = &quot;reviewerEmail&quot;) @RequestParam String reviewerEmail,
+            @Parameter(name = &quot;stars&quot;) @RequestParam int stars,
+            @Parameter(name = &quot;dateReviewed&quot;, description = &quot;date (in iso format, e.g. YYYY-mm-ddTHH:MM:SS; see https://en.wikipedia.org/wiki/ISO_8601)&quot;) 
+            @RequestParam(&quot;dateReviewed&quot;) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateReviewed,
+            @Parameter(name = &quot;comments&quot;) @RequestParam String comments)
+            throws JsonProcessingException {
+
+<span class="fc" id="L76">        log.info(&quot;dateReviewed={}&quot;, dateReviewed);</span>
+
+<span class="fc" id="L78">        UCSBMenuItemReview ucsbMenuItemReview = UCSBMenuItemReview.builder()</span>
+<span class="fc" id="L79">                .itemId(itemId)</span>
+<span class="fc" id="L80">                .reviewerEmail(reviewerEmail)</span>
+<span class="fc" id="L81">                .stars(stars)</span>
+<span class="fc" id="L82">                .dateReviewed(dateReviewed)</span>
+<span class="fc" id="L83">                .comments(comments)</span>
+<span class="fc" id="L84">                .build();</span>
+
+<span class="fc" id="L86">        UCSBMenuItemReview savedUcsbMenuItemReview = ucsbMenuItemReviewRepository.save(ucsbMenuItemReview);</span>
+
+<span class="fc" id="L88">        return savedUcsbMenuItemReview;</span>
+    }
+
+    /**
+     * Get a single UCSBMenuItemReview by id
+     * 
+     * @param id the id of the review
+     * @return a UCSBMenuItemReview
+     */
+    @Operation(summary = &quot;Get a single menu item review&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
+    @GetMapping(&quot;&quot;)
+    public UCSBMenuItemReview getById(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
+<span class="fc" id="L102">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L103">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L105">        return review;</span>
+    }
+
+    /**
+     * Update a single UCSBMenuItemReview
+     * 
+     * @param id       id of the review to update
+     * @param incoming the new review
+     * @return the updated review object
+     */
+    @Operation(summary = &quot;Update a single UCSBMenuItemReview&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PutMapping(&quot;&quot;)
+    public UCSBMenuItemReview updateUCSBMenuItemReview(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id,
+            @RequestBody @Valid UCSBMenuItemReview incoming) {
+
+<span class="fc" id="L122">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L123">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L125">        review.setReviewerEmail(incoming.getReviewerEmail());</span>
+<span class="fc" id="L126">        review.setStars(incoming.getStars());</span>
+<span class="fc" id="L127">        review.setDateReviewed(incoming.getDateReviewed());</span>
+<span class="fc" id="L128">        review.setComments(incoming.getComments());</span>
+<span class="fc" id="L129">        review.setItemId(incoming.getItemId());</span>
+
+<span class="fc" id="L131">        ucsbMenuItemReviewRepository.save(review);</span>
+
+<span class="fc" id="L133">        return review;</span>
+    }
+    
+    /**
+     * Delete a UCSBMenuItemReview
+     * 
+     * @param id the id of the review to delete
+     * @return a message indicating the review was deleted
+     */
+    @Operation(summary = &quot;Delete a UCSBMenuItemReview&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @DeleteMapping(&quot;&quot;)
+    public Object deleteUCSBMenuItemReview(
+            @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
+<span class="fc" id="L147">        UCSBMenuItemReview review = ucsbMenuItemReviewRepository.findById(id)</span>
+<span class="fc" id="L148">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBMenuItemReview.class, id));</span>
+
+<span class="fc" id="L150">        ucsbMenuItemReviewRepository.delete(review);</span>
+<span class="fc" id="L151">        return genericMessage(&quot;UCSBMenuItemReview with id %s deleted&quot;.formatted(id));</span>
+    }
+     
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
