@@ -72,6 +72,24 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
     verify(recommendationRequestRepository, times(1)).findAll();
   }
 
+  // Test for empty list returned by allRecommendationRequests
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void test_allRecommendationRequests_empty_list() throws Exception {
+    // Arrange
+    ArrayList<RecommendationRequest> emptyRequests = new ArrayList<>();
+    when(recommendationRequestRepository.findAll()).thenReturn(emptyRequests);
+
+    // Act & Assert
+    mockMvc.perform(get("/api/recommendationrequests/all"))
+        .andExpect(status().is(200))
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$").isEmpty());
+
+    // Verify repository was called
+    verify(recommendationRequestRepository, times(1)).findAll();
+  }
+
   // Authorization tests for /api/recommendationrequests/post
 
   @Test
@@ -243,5 +261,177 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
 
     // Verify repository was called
     verify(recommendationRequestRepository, times(1)).findById(7L);
+  }
+
+  // Test for getById with null return
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void test_getById_returns_correct_data() throws Exception {
+    // Arrange
+    RecommendationRequest expectedRequest = new RecommendationRequest();
+    expectedRequest.setId(7L);
+    expectedRequest.setRequesterEmail("requester@example.com");
+    expectedRequest.setProfessorEmail("professor@example.com");
+    expectedRequest.setExplanation("Test explanation");
+    expectedRequest.setDateRequested(LocalDateTime.now());
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.of(expectedRequest));
+
+    // Act & Assert
+    mockMvc.perform(get("/api/recommendationrequests?id=7"))
+        .andExpect(status().is(200))
+        .andExpect(jsonPath("$.id").value(7))
+        .andExpect(jsonPath("$.requesterEmail").value("requester@example.com"))
+        .andExpect(jsonPath("$.professorEmail").value("professor@example.com"))
+        .andExpect(jsonPath("$.explanation").value("Test explanation"));
+
+    // Verify repository was called
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+  }
+
+  // Tests for PUT
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void admin_can_update_recommendation_request() throws Exception {
+    // Arrange
+    LocalDateTime dateRequested = LocalDateTime.now();
+
+    // Create existing recommendation request
+    RecommendationRequest existingRequest = new RecommendationRequest();
+    existingRequest.setId(7L);
+    existingRequest.setRequesterEmail("old@example.com");
+    existingRequest.setProfessorEmail("old@example.com");
+    existingRequest.setExplanation("Old explanation");
+    existingRequest.setDateRequested(LocalDateTime.now().minusDays(1));
+
+    // Create updated recommendation request
+    RecommendationRequest updatedRequest = new RecommendationRequest();
+    updatedRequest.setRequesterEmail("new@example.com");
+    updatedRequest.setProfessorEmail("new@example.com");
+    updatedRequest.setExplanation("New explanation");
+    updatedRequest.setDateRequested(dateRequested);
+
+    String requestBody = mapper.writeValueAsString(updatedRequest);
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.of(existingRequest));
+    when(recommendationRequestRepository.save(any(RecommendationRequest.class))).thenReturn(existingRequest);
+
+    // Act
+    MvcResult response = mockMvc.perform(
+        put("/api/recommendationrequests?id=7")
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(requestBody)
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    // Assert
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+    verify(recommendationRequestRepository, times(1)).save(any(RecommendationRequest.class));
+
+    // Verify the response contains the expected data
+    String responseString = response.getResponse().getContentAsString();
+    assertTrue(responseString.contains("new@example.com"));
+    assertTrue(responseString.contains("New explanation"));
+  }
+
+  // Test to verify all setter methods are called during update
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void test_updateRecommendationRequest_sets_all_fields() throws Exception {
+    // Arrange
+    LocalDateTime dateRequested = LocalDateTime.now();
+
+    // Create existing recommendation request
+    RecommendationRequest existingRequest = new RecommendationRequest();
+    existingRequest.setId(7L);
+    existingRequest.setRequesterEmail("old@example.com");
+    existingRequest.setProfessorEmail("old@example.com");
+    existingRequest.setExplanation("Old explanation");
+    existingRequest.setDateRequested(LocalDateTime.now().minusDays(1));
+
+    // Create updated recommendation request
+    RecommendationRequest updatedRequest = new RecommendationRequest();
+    updatedRequest.setRequesterEmail("new@example.com");
+    updatedRequest.setProfessorEmail("new@example.com");
+    updatedRequest.setExplanation("New explanation");
+    updatedRequest.setDateRequested(dateRequested);
+
+    String requestBody = mapper.writeValueAsString(updatedRequest);
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.of(existingRequest));
+    when(recommendationRequestRepository.save(any(RecommendationRequest.class))).thenReturn(existingRequest);
+
+    // Act
+    mockMvc.perform(
+        put("/api/recommendationrequests?id=7")
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(requestBody)
+            .with(csrf()))
+        .andExpect(status().isOk());
+
+    // Assert
+    verify(recommendationRequestRepository).save(recommendationRequestCaptor.capture());
+    RecommendationRequest capturedRequest = recommendationRequestCaptor.getValue();
+
+    // Verify all fields were set correctly
+    assertEquals("new@example.com", capturedRequest.getRequesterEmail());
+    assertEquals("new@example.com", capturedRequest.getProfessorEmail());
+    assertEquals("New explanation", capturedRequest.getExplanation());
+    assertEquals(dateRequested, capturedRequest.getDateRequested());
+  }
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void admin_cannot_update_recommendation_request_that_does_not_exist() throws Exception {
+    // Arrange
+    LocalDateTime dateRequested = LocalDateTime.now();
+
+    RecommendationRequest updatedRequest = new RecommendationRequest();
+    updatedRequest.setRequesterEmail("new@example.com");
+    updatedRequest.setProfessorEmail("new@example.com");
+    updatedRequest.setExplanation("New explanation");
+    updatedRequest.setDateRequested(dateRequested);
+
+    String requestBody = mapper.writeValueAsString(updatedRequest);
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.empty());
+
+    // Act
+    MvcResult response = mockMvc.perform(
+        put("/api/recommendationrequests?id=7")
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(requestBody)
+            .with(csrf()))
+        .andExpect(status().isNotFound())
+        .andReturn();
+
+    // Assert
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+    verify(recommendationRequestRepository, times(0)).save(any(RecommendationRequest.class));
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("RecommendationRequest with id 7 not found", json.get("message"));
+  }
+
+  @Test
+  public void logged_out_users_cannot_update() throws Exception {
+    mockMvc.perform(put("/api/recommendationrequests?id=7")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{}"))
+        .andExpect(status().is(403));
+  }
+
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void logged_in_regular_users_cannot_update() throws Exception {
+    mockMvc.perform(put("/api/recommendationrequests?id=7")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{}"))
+        .andExpect(status().is(403)); // only admins can update
   }
 }
