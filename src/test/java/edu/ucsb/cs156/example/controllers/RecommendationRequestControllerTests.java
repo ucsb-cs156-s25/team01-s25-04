@@ -434,4 +434,72 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
         .content("{}"))
         .andExpect(status().is(403)); // only admins can update
   }
+
+  // Tests for DELETE
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void admin_can_delete_recommendation_request() throws Exception {
+    // Arrange
+    LocalDateTime dateRequested = LocalDateTime.now();
+
+    RecommendationRequest recommendationRequest = new RecommendationRequest();
+    recommendationRequest.setId(15L);
+    recommendationRequest.setRequesterEmail("requester@example.com");
+    recommendationRequest.setProfessorEmail("professor@example.com");
+    recommendationRequest.setExplanation("Test explanation");
+    recommendationRequest.setDateRequested(dateRequested);
+
+    when(recommendationRequestRepository.findById(eq(15L))).thenReturn(Optional.of(recommendationRequest));
+
+    // Act
+    MvcResult response = mockMvc.perform(
+        delete("/api/recommendationrequests?id=15")
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    // Assert
+    verify(recommendationRequestRepository, times(1)).findById(15L);
+    verify(recommendationRequestRepository, times(1)).delete(any(RecommendationRequest.class));
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("RecommendationRequest with id 15 deleted", json.get("message"));
+  }
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void admin_tries_to_delete_non_existent_recommendation_request_and_gets_right_error_message()
+      throws Exception {
+    // Arrange
+    when(recommendationRequestRepository.findById(eq(15L))).thenReturn(Optional.empty());
+
+    // Act
+    MvcResult response = mockMvc.perform(
+        delete("/api/recommendationrequests?id=15")
+            .with(csrf()))
+        .andExpect(status().isNotFound())
+        .andReturn();
+
+    // Assert
+    verify(recommendationRequestRepository, times(1)).findById(15L);
+    verify(recommendationRequestRepository, times(0)).delete(any(RecommendationRequest.class));
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("RecommendationRequest with id 15 not found", json.get("message"));
+  }
+
+  @Test
+  public void logged_out_users_cannot_delete() throws Exception {
+    mockMvc.perform(delete("/api/recommendationrequests?id=15"))
+        .andExpect(status().is(403));
+  }
+
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void logged_in_regular_users_cannot_delete() throws Exception {
+    mockMvc.perform(delete("/api/recommendationrequests?id=15")
+        .with(csrf()))
+        .andExpect(status().is(403)); // only admins can delete
+  }
 }
