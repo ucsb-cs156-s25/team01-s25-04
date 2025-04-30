@@ -198,4 +198,50 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
     // Verify the repository was called exactly once
     verify(recommendationRequestRepository, times(1)).save(any(RecommendationRequest.class));
   }
+
+  // Test for getById endpoint
+  @Test
+  public void logged_out_users_cannot_get_by_id() throws Exception {
+    mockMvc.perform(get("/api/recommendationrequests?id=7"))
+        .andExpect(status().is(403)); // logged out users can't get by id
+  }
+
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void logged_in_users_can_get_by_id() throws Exception {
+    // Arrange
+    RecommendationRequest expectedRequest = new RecommendationRequest();
+    expectedRequest.setId(7L);
+    expectedRequest.setRequesterEmail("requester@example.com");
+    expectedRequest.setProfessorEmail("professor@example.com");
+    expectedRequest.setExplanation("Test explanation");
+    expectedRequest.setDateRequested(LocalDateTime.now());
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.of(expectedRequest));
+
+    // Act & Assert
+    mockMvc.perform(get("/api/recommendationrequests?id=7"))
+        .andExpect(status().is(200))
+        .andExpect(jsonPath("$.id").value(7))
+        .andExpect(jsonPath("$.requesterEmail").value("requester@example.com"))
+        .andExpect(jsonPath("$.professorEmail").value("professor@example.com"))
+        .andExpect(jsonPath("$.explanation").value("Test explanation"));
+
+    // Verify repository was called
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+  }
+
+  @WithMockUser(roles = { "USER" })
+  @Test
+  public void test_getById_not_found() throws Exception {
+    // Arrange
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.empty());
+
+    // Act & Assert
+    mockMvc.perform(get("/api/recommendationrequests?id=7"))
+        .andExpect(status().is(404));
+
+    // Verify repository was called
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+  }
 }
