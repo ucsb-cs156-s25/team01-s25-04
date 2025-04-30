@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,8 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = &quot;RecommendationRequest&quot;)
 @RequestMapping(&quot;/api/recommendationrequests&quot;)
 @RestController
-<span class="fc" id="L37">@Slf4j</span>
-<span class="fc" id="L38">public class RecommendationRequestController extends ApiController {</span>
+<span class="fc" id="L36">@Slf4j</span>
+<span class="fc" id="L37">public class RecommendationRequestController extends ApiController {</span>
 
   @Autowired
   RecommendationRequestRepository recommendationRequestRepository;
@@ -49,8 +48,8 @@ import lombok.extern.slf4j.Slf4j;
   @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
   @GetMapping(&quot;/all&quot;)
   public Iterable&lt;RecommendationRequest&gt; allRecommendationRequests() {
-<span class="fc" id="L52">    Iterable&lt;RecommendationRequest&gt; recommendationRequests = recommendationRequestRepository.findAll();</span>
-<span class="fc" id="L53">    return recommendationRequests;</span>
+<span class="fc" id="L51">    Iterable&lt;RecommendationRequest&gt; recommendationRequests = recommendationRequestRepository.findAll();</span>
+<span class="fc" id="L52">    return recommendationRequests;</span>
   }
 
   /**
@@ -64,10 +63,10 @@ import lombok.extern.slf4j.Slf4j;
   @GetMapping(&quot;&quot;)
   public RecommendationRequest getById(
       @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
-<span class="fc" id="L67">    RecommendationRequest recommendationRequest = recommendationRequestRepository.findById(id)</span>
-<span class="fc" id="L68">        .orElseThrow(() -&gt; new EntityNotFoundException(RecommendationRequest.class, id));</span>
+<span class="fc" id="L66">    RecommendationRequest recommendationRequest = recommendationRequestRepository.findById(id)</span>
+<span class="fc" id="L67">        .orElseThrow(() -&gt; new EntityNotFoundException(RecommendationRequest.class, id));</span>
 
-<span class="fc" id="L70">    return recommendationRequest;</span>
+<span class="fc" id="L69">    return recommendationRequest;</span>
   }
 
   /**
@@ -89,17 +88,17 @@ import lombok.extern.slf4j.Slf4j;
       @Parameter(name = &quot;dateRequested&quot;, description = &quot;date (in iso format, e.g. YYYY-mm-ddTHH:MM:SS; see https://en.wikipedia.org/wiki/ISO_8601)&quot;) @RequestParam(&quot;dateRequested&quot;) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateRequested)
       throws JsonProcessingException {
 
-<span class="fc" id="L92">    log.info(&quot;dateRequested={}&quot;, dateRequested);</span>
+<span class="fc" id="L91">    log.info(&quot;dateRequested={}&quot;, dateRequested);</span>
 
-<span class="fc" id="L94">    RecommendationRequest recommendationRequest = new RecommendationRequest();</span>
-<span class="fc" id="L95">    recommendationRequest.setRequesterEmail(requesterEmail);</span>
-<span class="fc" id="L96">    recommendationRequest.setProfessorEmail(professorEmail);</span>
-<span class="fc" id="L97">    recommendationRequest.setExplanation(explanation);</span>
-<span class="fc" id="L98">    recommendationRequest.setDateRequested(dateRequested);</span>
+<span class="fc" id="L93">    RecommendationRequest recommendationRequest = new RecommendationRequest();</span>
+<span class="fc" id="L94">    recommendationRequest.setRequesterEmail(requesterEmail);</span>
+<span class="fc" id="L95">    recommendationRequest.setProfessorEmail(professorEmail);</span>
+<span class="fc" id="L96">    recommendationRequest.setExplanation(explanation);</span>
+<span class="fc" id="L97">    recommendationRequest.setDateRequested(dateRequested);</span>
 
-<span class="fc" id="L100">    RecommendationRequest savedRecommendationRequest = recommendationRequestRepository.save(recommendationRequest);</span>
+<span class="fc" id="L99">    RecommendationRequest savedRecommendationRequest = recommendationRequestRepository.save(recommendationRequest);</span>
 
-<span class="fc" id="L102">    return savedRecommendationRequest;</span>
+<span class="fc" id="L101">    return savedRecommendationRequest;</span>
   }
 
   /**
@@ -116,35 +115,17 @@ import lombok.extern.slf4j.Slf4j;
       @Parameter(name = &quot;id&quot;) @RequestParam Long id,
       @RequestBody @Valid RecommendationRequest incoming) {
 
-<span class="fc" id="L119">    RecommendationRequest recommendationRequest = recommendationRequestRepository.findById(id)</span>
-<span class="fc" id="L120">        .orElseThrow(() -&gt; new EntityNotFoundException(RecommendationRequest.class, id));</span>
+<span class="fc" id="L118">    RecommendationRequest recommendationRequest = recommendationRequestRepository.findById(id)</span>
+<span class="fc" id="L119">        .orElseThrow(() -&gt; new EntityNotFoundException(RecommendationRequest.class, id));</span>
 
-<span class="fc" id="L122">    recommendationRequest.setRequesterEmail(incoming.getRequesterEmail());</span>
-<span class="fc" id="L123">    recommendationRequest.setProfessorEmail(incoming.getProfessorEmail());</span>
-<span class="fc" id="L124">    recommendationRequest.setExplanation(incoming.getExplanation());</span>
-<span class="fc" id="L125">    recommendationRequest.setDateRequested(incoming.getDateRequested());</span>
+<span class="fc" id="L121">    recommendationRequest.setRequesterEmail(incoming.getRequesterEmail());</span>
+<span class="fc" id="L122">    recommendationRequest.setProfessorEmail(incoming.getProfessorEmail());</span>
+<span class="fc" id="L123">    recommendationRequest.setExplanation(incoming.getExplanation());</span>
+<span class="fc" id="L124">    recommendationRequest.setDateRequested(incoming.getDateRequested());</span>
 
-<span class="fc" id="L127">    recommendationRequestRepository.save(recommendationRequest);</span>
+<span class="fc" id="L126">    recommendationRequestRepository.save(recommendationRequest);</span>
 
-<span class="fc" id="L129">    return recommendationRequest;</span>
-  }
-
-  /**
-   * Delete a recommendation request
-   * 
-   * @param id the id of the recommendation request to delete
-   * @return a message indicating the recommendation request was deleted
-   */
-  @Operation(summary = &quot;Delete a recommendation request&quot;)
-  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
-  @DeleteMapping(&quot;&quot;)
-  public Object deleteRecommendationRequest(
-      @Parameter(name = &quot;id&quot;) @RequestParam Long id) {
-<span class="fc" id="L143">    RecommendationRequest recommendationRequest = recommendationRequestRepository.findById(id)</span>
-<span class="fc" id="L144">        .orElseThrow(() -&gt; new EntityNotFoundException(RecommendationRequest.class, id));</span>
-
-<span class="fc" id="L146">    recommendationRequestRepository.delete(recommendationRequest);</span>
-<span class="fc" id="L147">    return genericMessage(&quot;RecommendationRequest with id %s deleted&quot;.formatted(id));</span>
+<span class="fc" id="L128">    return recommendationRequest;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
